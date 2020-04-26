@@ -11,11 +11,11 @@ object Language extends Enumeration {
 }
 
 final case class Book(
-                       bookType: BookType.Value,
+                       //bookType: BookType.Value,
                        title: String,
-                       year: Date,
+                       //year: Date,
                        publisher: String,
-                       language: Language.Value,
+                       //language: Language.Value,
                        isbn10: String,
                        isbn13: String
                      )
