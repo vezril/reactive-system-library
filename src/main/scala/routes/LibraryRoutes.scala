@@ -10,6 +10,7 @@ import org.apache.logging.log4j.scala.Logging
 import org.cference.library.actors.LibraryEntity
 import org.cference.library.actors.LibraryEntity._
 import org.cference.library.models.Book
+import org.cference.library.routes.LibraryRoutes._
 import org.cference.library.serializer.JsonSupport
 import spray.json._
 
@@ -26,10 +27,8 @@ trait MethodAndPathDirectives {
 
 object LibraryRoutes {
   private def toHttpEntity(payload: String) = HttpEntity(ContentTypes.`application/json`, payload)
-
   private def findBookByTitle(title: String)(replyTo: ActorRef[LibraryEntity.Reply]): FindBookByTitleCommand = FindBookByTitleCommand(title, replyTo)
   private def addBook(book: Book)(replyTo: ActorRef[LibraryEntity.Reply]): AddBookCommand = AddBookCommand(book, replyTo)
-
 }
 
 class LibraryRoutes(library: ActorRef[LibraryEntity.Command])(implicit system: ActorSystem[_])
@@ -37,8 +36,6 @@ class LibraryRoutes(library: ActorRef[LibraryEntity.Command])(implicit system: A
     with DefaultJsonProtocol
     with MethodAndPathDirectives
     with Logging {
-
-  import LibraryRoutes._
 
   implicit val timeout: Timeout = 2 seconds
 
