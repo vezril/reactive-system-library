@@ -1,7 +1,5 @@
 package org.cference.library.models
 
-import java.util.{Date, UUID}
-
 object BookType extends Enumeration {
   val Paperback, Hardcover, Digital = Value
 }

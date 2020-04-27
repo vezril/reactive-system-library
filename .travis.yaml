@@ -1,0 +1,29 @@
+language: scala
+scala:
+  - 2.12.6
+
+jobs:
+  include:
+    - stage: test
+      name: "Testing Stage"
+      script: sbt test
+    - stage: build
+      name: "Building Stage"
+      script: sbt compile
+    - stage: docker-deploy
+      name: "Deploy to Docker Hub"
+      script: sbt docker:publish
+
+stages:
+  - build
+  - test
+  - name: docker-deploy
+    on:
+      tags: true
+
+jdk:
+  - oraclejdk8
+
+notifications:
+  email:
+    - calvin.ference@gmail.com

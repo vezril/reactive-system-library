@@ -1,21 +1,20 @@
 package org.cference.library.routes
 
-import akka.actor.typed.{ActorRef, ActorSystem}
 import akka.actor.typed.scaladsl.AskPattern._
+import akka.actor.typed.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
-import akka.http.scaladsl.server.ContentNegotiator.Alternative.ContentType
-import akka.http.scaladsl.server.{Directive, PathMatcher, RequestContext, Route, RouteResult}
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server._
 import akka.util.Timeout
-import org.cference.library.actors.LibraryActor
-import org.cference.library.actors.LibraryActor._
+import org.apache.logging.log4j.scala.Logging
+import org.cference.library.actors.LibraryEntity
+import org.cference.library.actors.LibraryEntity._
 import org.cference.library.models.Book
 import org.cference.library.serializer.JsonSupport
 import spray.json._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait MethodAndPathDirectives {
   def getPath[L](x: PathMatcher[L]): Directive[L] = get & path(x)
@@ -28,15 +27,16 @@ trait MethodAndPathDirectives {
 object LibraryRoutes {
   private def toHttpEntity(payload: String) = HttpEntity(ContentTypes.`application/json`, payload)
 
-  private def findBookByTitle(title: String)(replyTo: ActorRef[LibraryActor.Reply]): FindBookByTitleCommand = FindBookByTitleCommand(title, replyTo)
-  private def addBook(book: Book)(replyTo: ActorRef[LibraryActor.Reply]): AddBookCommand = AddBookCommand(book, replyTo)
+  private def findBookByTitle(title: String)(replyTo: ActorRef[LibraryEntity.Reply]): FindBookByTitleCommand = FindBookByTitleCommand(title, replyTo)
+  private def addBook(book: Book)(replyTo: ActorRef[LibraryEntity.Reply]): AddBookCommand = AddBookCommand(book, replyTo)
 
 }
 
-class LibraryRoutes(library: ActorRef[LibraryActor.Command])(implicit system: ActorSystem[_])
+class LibraryRoutes(library: ActorRef[LibraryEntity.Command])(implicit system: ActorSystem[_])
   extends JsonSupport
     with DefaultJsonProtocol
-    with MethodAndPathDirectives {
+    with MethodAndPathDirectives
+    with Logging {
 
   import LibraryRoutes._
 
@@ -61,7 +61,7 @@ class LibraryRoutes(library: ActorRef[LibraryActor.Command])(implicit system: Ac
     }
   }
 
-  lazy val libraryRoutes2: Route =
+  lazy val libraryRoutes: Route =
     getPath("api" / "v1" / "books") {
       handleSearchAll
     }~
@@ -69,6 +69,7 @@ class LibraryRoutes(library: ActorRef[LibraryActor.Command])(implicit system: Ac
       handleFindByTitle(title)
     }~
     postPath("api" / "v1" / "books") {
+      logger.info("Inside the post block")
       entity(as[Book]) { book =>
         handleAddBook(book)
       }

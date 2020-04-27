@@ -14,6 +14,4 @@ object Main extends Logging with App {
     sys.props += "log4j2.contextSelector" -> classOf[AsyncLoggerContextSelector].getName
     val system = ActorSystem[LibraryManager.Message](LibraryManager(), "library-manager")
   }
-
-
 }

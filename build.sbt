@@ -24,9 +24,11 @@ lazy val `reactive-system-library` =
       dependencies.jaxbApi,
       dependencies.log4jApiScala,
       dependencies.log4jCore,
-      dependencies.log4jSlf4jImpl, // Needed for transient slf4j depencencies, e.g. via akak-persistence-cassandra!
+      dependencies.log4jSlf4jImpl,
       dependencies.pureConfig,
-      dependencies.embeddedKafka
+      dependencies.embeddedKafka,
+      dependencies.leveldb,
+      dependencies.leveldbjni
     ))
 
 lazy val settings =
@@ -82,7 +84,10 @@ lazy val dependencies =
       val scalaCheck                  = "1.14.0"
       val utest                       = "0.6.4"
       val kafka                       = "2.0.0"
+      val leveldb                     = "0.7"
+      val leveldbjni                  = "1.8"
     }
+
     val akkaActorTyped                 = "com.typesafe.akka"                  %% "akka-actor-typed"                  % Version.akka
     val akkaClusterShardingTyped       = "com.typesafe.akka"                  %% "akka-cluster-sharding-typed"       % Version.akka
     val akkaDiscoveryDns               = "com.lightbend.akka.discovery"       %% "akka-discovery-dns"                % Version.akkaManagement
@@ -113,4 +118,6 @@ lazy val dependencies =
     val pureConfig                     = "com.github.pureconfig"              %% "pureconfig"                        % Version.pureConfig
     val scalaCheck                     = "org.scalacheck"                     %% "scalacheck"                        % Version.scalaCheck
     val utest                          = "com.lihaoyi"                        %% "utest"                             % Version.utest
+    val leveldb                        = "org.iq80.leveldb"                   % "leveldb"                            % Version.leveldb
+    val leveldbjni                     = "org.fusesource.leveldbjni"          % "leveldbjni-all"                     % Version.leveldbjni
   }

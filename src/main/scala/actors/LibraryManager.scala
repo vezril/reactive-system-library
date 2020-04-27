@@ -22,15 +22,14 @@ object LibraryManager {
 
   def apply(host: String = "0.0.0.0", port: Int = 8080): Behavior[Message] = Behaviors.setup { context =>
     context.log.info("Starting up LibraryManager")
-    val library = context.spawn(LibraryActor(), "library")
+    val library = context.spawn(LibraryEntity(), "library")
 
     implicit val system = context.system
     implicit val materializer = ActorMaterializer()(context.system.toClassic)
     implicit val classicSystem: akka.actor.ActorSystem = context.system.toClassic
 
-    //LibraryApi(library, context)
     val routes = new LibraryRoutes(library)
-    val serverBinding: Future[Http.ServerBinding] = Http.apply().bindAndHandle(routes.libraryRoutes2, host, port)
+    val serverBinding: Future[Http.ServerBinding] = Http.apply().bindAndHandle(routes.libraryRoutes, host, port)
 
     context.pipeToSelf(serverBinding) {
       case Success(binding) => Started(binding)
