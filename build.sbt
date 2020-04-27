@@ -1,6 +1,7 @@
 lazy val `reactive-system-library` =
   project
     .in(file("."))
+    .enablePlugins(DockerPlugin, JavaAppPackaging)
     .settings(settings)
     .settings(libraryDependencies ++= Seq(
       dependencies.akkaActorTyped,
@@ -29,7 +30,7 @@ lazy val `reactive-system-library` =
     ))
 
 lazy val settings =
-  commonSettings
+  commonSettings ++ dockerSettings
 
 lazy val commonSettings =
   Seq(
@@ -48,6 +49,15 @@ lazy val commonSettings =
       "-Ypartial-unification",
       "-Ywarn-unused-import"
     )
+  )
+
+lazy val dockerSettings =
+  Seq(
+    Docker / maintainer := "Calvin Ference",
+    Docker / version := "latest",
+    dockerBaseImage := "openjdk:10.0.2-slim",
+    dockerExposedPorts := Seq(2552, 8558, 9042, 8080),
+    dockerUsername := Some("vezril")
   )
 
 lazy val dependencies =

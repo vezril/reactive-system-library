@@ -20,7 +20,7 @@ object LibraryManager {
   private final case class Started(binding: ServerBinding) extends Message
   case object Stop extends Message
 
-  def apply(host: String = "localhost", port: Int = 8080): Behavior[Message] = Behaviors.setup { context =>
+  def apply(host: String = "0.0.0.0", port: Int = 8080): Behavior[Message] = Behaviors.setup { context =>
     context.log.info("Starting up LibraryManager")
     val library = context.spawn(LibraryActor(), "library")
 
