@@ -20,38 +20,22 @@ object LibraryActor {
   final case object AddBookFailedReply extends Reply
   final case class FindBookReply(books: Seq[Book]) extends Reply
 
-  def apply(books: Map[UUID, Book] = Map.empty): Behavior[LibraryActor.Command] = {
-    Behaviors.setup(context => {
-      context.log.info("Staring LibraryActor")
-      new LibraryActor(context)})
-  }
-}
-
-class LibraryActor(context: ActorContext[LibraryActor.Command], books: Map[UUID, Book] = Map.empty) extends AbstractBehavior[LibraryActor.Command](context) {
-  import LibraryActor._
-
-  private def logCommand(c: Command): Unit = {
-    context.log.info(s"${c.toString} Received")
-  }
-
-  override def onMessage(msg: Command): Behavior[Command] = {
-    msg match {
-      case c @ AddBookCommand(book, replyTo) => {
-        logCommand(c)
-        //replyTo ! AddBookSuccessReply
-        Behaviors.same
-      }
-      case c @ FindBookByTitleCommand(title, replyTo) => {
-        logCommand(c)
-        Behaviors.same
-      }
-      case c @ FindAllBooksCommand(replyTo) => {
-        logCommand(c)
-        replyTo ! FindBookReply(books.values.toSeq)
-        Behaviors.same
-      }
+  def apply(books: Map[UUID, Book] = Map(UUID.randomUUID -> Book("1984", "YoMama", "10", "13"))): Behavior[Command] = Behaviors.receiveMessage {
+    case c @ AddBookCommand(book, replyTo) => {
+      //logCommand(c)
+      replyTo ! AddBookSuccessReply
+      LibraryActor(books ++ Map(UUID.randomUUID -> book))
+      //Behaviors.same
     }
-    this
+    case c @ FindBookByTitleCommand(title, replyTo) => {
+      //logCommand(c)
+      replyTo ! FindBookReply(books.values.find(_.title == title).toSeq)
+      Behaviors.same
+    }
+    case c @ FindAllBooksCommand(replyTo) => {
+      //logCommand(c)
+      replyTo ! FindBookReply(books.values.toSeq)
+      Behaviors.same
+    }
   }
-  // Check Configuration (context) ACtorContext[ConfigurationMessage for the state
 }
